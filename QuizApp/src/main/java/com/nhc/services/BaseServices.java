@@ -1,17 +1,29 @@
-///*
-// * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-// * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
-// */
-//package com.nhc.services;
-//
-//import java.util.ArrayList;
-//import java.util.List;
-//
-///**
-// *
-// * @author admin
-// */
-//public abstract class BaseServices {
-//    
-//    private List<T> list = new ArrayList<>();
-//}
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.nhc.services;
+
+import com.nhc.utils.MyConnector;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+/**
+ *
+ * @author admin
+ */
+public abstract class BaseServices<T> {
+
+    public abstract PreparedStatement getStm(Connection con) throws SQLException;
+
+    public abstract List<T> getResults(ResultSet rs) throws SQLException;
+
+    public List<T> list() throws SQLException {
+        Connection con = MyConnector.getInstance().connect();
+        PreparedStatement stm = this.getStm(con);
+        return this.getResults(stm.executeQuery());
+    }
+}

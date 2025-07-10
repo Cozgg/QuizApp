@@ -4,38 +4,36 @@
  */
 package com.nhc.services;
 
-import com.nhc.pojo.Category;
-import com.nhc.utils.MyConnector;
+import com.nhc.pojo.Level;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
- * @author Admin
+ * @author admin
  */
-public class CategoryServices extends BaseServices<Category> {
+public class LevelServices extends BaseServices<Level> {
 
     @Override
     public PreparedStatement getStm(Connection con) throws SQLException {
-        return con.prepareCall("SELECT * FROM category");
+        return con.prepareCall("SELECT * FROM level");
     }
 
     @Override
-    public List<Category> getResults(ResultSet rs) throws SQLException {
-        List<Category> cates = new ArrayList<>();
+    public List<Level> getResults(ResultSet rs) throws SQLException {
+         List<Level> lvl = new ArrayList<>();
 
         while (rs.next()) {
             int id = rs.getInt("id");
             String name = rs.getString("name");
-            Category c = new Category(id, name);
-            cates.add(c);
+            Level l = new Level(id, name, name);
+            lvl.add(l);
         }
-        return cates;
+        return lvl;
     }
 
 }
