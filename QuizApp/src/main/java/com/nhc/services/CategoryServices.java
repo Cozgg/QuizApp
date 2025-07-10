@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.nhc.services;
-import pojo.Category;
+import com.nhc.pojo.Category;
 import com.nhc.utils.MyConnector;
 import java.sql.Connection;
 import java.sql.ResultSet;

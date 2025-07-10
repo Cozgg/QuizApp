@@ -4,7 +4,7 @@
  */
 package com.nhc.quizapp;
 
-import pojo.Category;
+import com.nhc.pojo.Category;
 import com.nhc.services.CategoryServices;
 import java.net.URL;
 import java.sql.SQLException;
