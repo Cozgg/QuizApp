@@ -12,9 +12,10 @@ import javafx.scene.control.Alert;
  */
 public class MyAlert {
     private static MyAlert INSTANCE;
-    private static final Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    private final Alert alert;
 
     private MyAlert() {
+        alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("quiz app");
         alert.setHeaderText("quiz app");
     }
@@ -27,6 +28,12 @@ public class MyAlert {
     
     public void showMsg(String content){
         alert.setContentText(content);
+        alert.showAndWait();
+    }
+    
+    public void showMsg(String content, Alert.AlertType type){
+        alert.setContentText(content);
+        alert.setAlertType(type);
         alert.showAndWait();
     }
 }

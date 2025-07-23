@@ -1,5 +1,6 @@
 package com.nhc.quizapp;
 
+import com.nhc.utils.MyConnector;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -19,8 +20,18 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("primary"), 640, 480);
         stage.setScene(scene);
+        stage.setTitle("Quiz App");
         stage.show();
     }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        MyConnector.getInstance().close();
+    }
+    
+    
+    
 
     static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
@@ -34,5 +45,4 @@ public class App extends Application {
     public static void main(String[] args) {
         launch();
     }
-
 }

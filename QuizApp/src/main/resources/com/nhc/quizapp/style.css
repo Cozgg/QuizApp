@@ -45,7 +45,6 @@
 /* --- Styling for Input Fields --- */
 .text-field, .text-area {
     -fx-background-color: #2D3748;
-    -fx-text-fill: #E2E8F0;
     -fx-font-size: 14px;
     -fx-border-color: #4A5568;
     -fx-border-width: 1px;

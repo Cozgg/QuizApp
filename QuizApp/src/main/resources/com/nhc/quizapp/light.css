@@ -39,7 +39,6 @@
 
 .text-field, .text-area {
     -fx-background-color: #FFFFFF;
-    -fx-text-fill: #2D3748;
     -fx-font-size: 14px;
     -fx-border-color: #CBD5E0;
     -fx-border-width: 1px;

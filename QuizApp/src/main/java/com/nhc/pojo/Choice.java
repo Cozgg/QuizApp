@@ -51,31 +51,19 @@ public class Choice {
     public void setIsCorrect(boolean isCorrect) {
         this.isCorrect = isCorrect;
     }
-
-    /**
-     * @return the questionID
-     */
-    public int getQuestionID() {
-        return questionID;
-    }
-
-    /**
-     * @param questionID the questionID to set
-     */
-    public void setQuestionID(int questionID) {
-        this.questionID = questionID;
-    }
+    
     private int id;
     private String content;
     private boolean isCorrect;
-    private int questionID;
 
-    public Choice(int id, String content, boolean isCorrect, int questionID) {
+    public Choice(int id, String content, boolean isCorrect) {
         this.id = id;
         this.content = content;
         this.isCorrect = isCorrect;
-        this.questionID = questionID;
     }
     
-    
+    public Choice(String content, boolean isCorrect){
+        this.content = content;
+        this.isCorrect = isCorrect;
+    }
 }
