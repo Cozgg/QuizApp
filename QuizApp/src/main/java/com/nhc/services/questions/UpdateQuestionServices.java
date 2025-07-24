@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.nhc.services;
+package com.nhc.services.questions;
 
 import com.nhc.pojo.Question;
 import com.nhc.utils.MyConnector;

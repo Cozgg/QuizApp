@@ -11,13 +11,16 @@ import com.nhc.pojo.Question;
 import com.nhc.services.BaseServices;
 import com.nhc.services.CategoryServices;
 import com.nhc.services.LevelServices;
-import com.nhc.services.UpdateQuestionServices;
+import com.nhc.services.questions.KeywordQuestionServiceDecorator;
+import com.nhc.services.questions.QuestionServices;
+import com.nhc.services.questions.UpdateQuestionServices;
 import com.nhc.utils.MyAlert;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -27,9 +30,12 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -50,29 +56,47 @@ public class QuestionsController implements Initializable {
     private TextArea txtContent;
     @FXML
     private ToggleGroup toggleChoice;
+    @FXML
+    private TableView<Question> tbQuestion;
+    @FXML
+    private TextField txtSearch;
 
     private final static BaseServices cateService = new CategoryServices();
     private final static BaseServices lvlService = new LevelServices();
+    private final static BaseServices quesService = new QuestionServices();
     private final static UpdateQuestionServices uQService = new UpdateQuestionServices();
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Khởi tạo ToggleGroup nếu nó chưa được khởi tạo trong FXML
         if (this.toggleChoice == null) {
             this.toggleChoice = new ToggleGroup();
         }
-        
+
         try {
             this.cbCates.setItems(FXCollections.observableList(cateService.list()));
             this.cbLevels.setItems(FXCollections.observableList(lvlService.list()));
+
+            this.loadColumns();
+            this.tbQuestion.setItems(FXCollections.observableList(quesService.list()));
+
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
             MyAlert.getInstance().showMsg("Không thể tải dữ liệu danh mục hoặc cấp độ!", Alert.AlertType.ERROR);
         }
+        
+        this.txtSearch.textProperty().addListener( a -> {
+            BaseServices searchService = new KeywordQuestionServiceDecorator(txtSearch.getText());
+            try {
+                this.tbQuestion.setItems(FXCollections.observableList(searchService.list()));
+            } catch (SQLException ex) {
+                Logger.getLogger(QuestionsController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+        });
+
     }
 
     public void addChoice(ActionEvent event) {
-        HBox h = new HBox(10); // Thêm khoảng cách giữa các phần tử
+        HBox h = new HBox(10);
         h.getStyleClass().add("Main");
 
         RadioButton rdo = new RadioButton();
@@ -80,7 +104,7 @@ public class QuestionsController implements Initializable {
 
         TextField txt = new TextField();
         txt.setPromptText("Nội dung lựa chọn");
-        txt.setPrefWidth(300); // Đặt chiều rộng mặc định
+        txt.setPrefWidth(300);
 
         h.getChildren().addAll(rdo, txt);
 
@@ -113,8 +137,7 @@ public class QuestionsController implements Initializable {
             MyAlert.getInstance().showMsg("Vui lòng chọn một đáp án đúng!", Alert.AlertType.WARNING);
             return;
         }
-        
-        // Kiểm tra xem có lựa chọn nào bị bỏ trống không
+
         for (Node n : this.vboxChoices.getChildren()) {
             HBox h = (HBox) n;
             TextField txt = (TextField) h.getChildren().get(1);
@@ -123,10 +146,8 @@ public class QuestionsController implements Initializable {
                 return;
             }
         }
-        // --- KẾT THÚC KIỂM TRA DỮ LIỆU ---
 
         try {
-            // Dữ liệu đã hợp lệ, tiến hành tạo câu hỏi
             Question.Builder b = new Question.Builder(this.txtContent.getText(),
                     this.cbCates.getSelectionModel().getSelectedItem(),
                     this.cbLevels.getSelectionModel().getSelectedItem());
@@ -135,13 +156,12 @@ public class QuestionsController implements Initializable {
                 HBox h = (HBox) c;
                 RadioButton rdo = (RadioButton) h.getChildren().get(0);
                 TextField txt = (TextField) h.getChildren().get(1);
-                
+
                 b.addChoice(new Choice(txt.getText(), rdo.isSelected()));
             }
 
             uQService.addQuestion(b.build());
-            
-            // Xóa dữ liệu trên form sau khi thêm thành công
+
             this.txtContent.clear();
             this.cbCates.getSelectionModel().clearSelection();
             this.cbLevels.getSelectionModel().clearSelection();
@@ -150,11 +170,22 @@ public class QuestionsController implements Initializable {
             MyAlert.getInstance().showMsg("Thêm câu hỏi thành công!", Alert.AlertType.INFORMATION);
 
         } catch (SQLException ex) {
-            // Cung cấp thông báo lỗi chi tiết hơn
             MyAlert.getInstance().showMsg("Thêm câu hỏi thất bại! Lỗi SQL: " + ex.getMessage(), Alert.AlertType.ERROR);
         } catch (Exception ex) {
-            // Bắt các lỗi không mong muốn khác
             MyAlert.getInstance().showMsg("Đã có lỗi xảy ra: " + ex.getMessage(), Alert.AlertType.ERROR);
         }
+    }
+
+    private void loadColumns() {
+        TableColumn colId = new TableColumn("ID");
+        colId.setCellValueFactory(new PropertyValueFactory("id"));
+        colId.setPrefWidth(100);
+
+        TableColumn colContent = new TableColumn("Nội dung câu hỏi");
+        colContent.setCellValueFactory(new PropertyValueFactory("content"));
+        colContent.setPrefWidth(300);
+
+        this.tbQuestion.getColumns().clear();
+        this.tbQuestion.getColumns().addAll(colId, colContent);
     }
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="649.0" prefWidth="600.0" styleClass="Main" stylesheets="@style.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.nhc.quizapp.PracticeController">
+   <children>
+      <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="LUYỆN TẬP" />
+      <HBox prefHeight="54.0" prefWidth="550.0" styleClass="Main">
+         <children>
+            <TextField fx:id="txtNum" stylesheets="@light.css" />
+            <Button fx:id="btStart" mnemonicParsing="false" onAction="#handleStart" text="Bắt đầu" />
+         </children>
+      </HBox>
+      <Text fx:id="txtContent" strokeType="OUTSIDE" strokeWidth="0.0" text="..." />
+      <VBox fx:id="vboxChoices" prefHeight="200.0" prefWidth="100.0" />
+      <Text fx:id="txtResult" strokeType="OUTSIDE" strokeWidth="0.0" text="..." />
+      <HBox prefHeight="100.0" prefWidth="200.0" styleClass="Main" stylesheets="@style.css">
+         <children>
+            <Button fx:id="btPrev" mnemonicParsing="false" onAction="#handlePrev" styleClass="Button" text="&lt;&lt;" />
+            <Button fx:id="btCheck" mnemonicParsing="false" onAction="#handleCheck" styleClass="Button" text="Kiểm tra" />
+            <Button fx:id="btNext" mnemonicParsing="false" onAction="#handleNext" styleClass="Button" text="&gt;&gt;" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

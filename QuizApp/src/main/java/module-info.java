@@ -8,4 +8,5 @@ module com.nhc.quizapp {
     opens com.nhc.quizapp to javafx.fxml;
     exports com.nhc.quizapp;
     exports com.nhc.utils; // nếu bạn cần truy cập MyConnector từ nơi khác
+    exports com.nhc.pojo;
 }
