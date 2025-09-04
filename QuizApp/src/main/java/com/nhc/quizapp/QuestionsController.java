@@ -11,14 +11,18 @@ import com.nhc.pojo.Question;
 import com.nhc.services.BaseServices;
 import com.nhc.services.CategoryServices;
 import com.nhc.services.LevelServices;
+import com.nhc.services.questions.CategoryQuestionServiceDecorator;
 import com.nhc.services.questions.KeywordQuestionServiceDecorator;
+import com.nhc.services.questions.LevelQuestionServiceDecorator;
 import com.nhc.services.questions.QuestionServices;
 import com.nhc.services.questions.UpdateQuestionServices;
 import com.nhc.utils.MyAlert;
+import com.nhc.utils.MyConfig;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -28,8 +32,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -49,7 +56,11 @@ public class QuestionsController implements Initializable {
     @FXML
     private ComboBox<Category> cbCates;
     @FXML
+    private ComboBox<Category> cbSearchCates;
+    @FXML
     private ComboBox<Level> cbLevels;
+    @FXML
+    private ComboBox<Level> cbSearchLevels;
     @FXML
     private VBox vboxChoices;
     @FXML
@@ -61,10 +72,6 @@ public class QuestionsController implements Initializable {
     @FXML
     private TextField txtSearch;
 
-    private final static BaseServices cateService = new CategoryServices();
-    private final static BaseServices lvlService = new LevelServices();
-    private final static BaseServices quesService = new QuestionServices();
-    private final static UpdateQuestionServices uQService = new UpdateQuestionServices();
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -73,11 +80,14 @@ public class QuestionsController implements Initializable {
         }
 
         try {
-            this.cbCates.setItems(FXCollections.observableList(cateService.list()));
-            this.cbLevels.setItems(FXCollections.observableList(lvlService.list()));
+            this.cbCates.setItems(FXCollections.observableList(MyConfig.cateService.list()));
+            this.cbSearchCates.setItems(FXCollections.observableList(MyConfig.cateService.list()));
+
+            this.cbLevels.setItems(FXCollections.observableList(MyConfig.lvlService.list()));
+            this.cbSearchLevels.setItems(FXCollections.observableList(MyConfig.lvlService.list()));
 
             this.loadColumns();
-            this.tbQuestion.setItems(FXCollections.observableList(quesService.list()));
+            this.tbQuestion.setItems(FXCollections.observableList(MyConfig.quesService.list()));
 
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
@@ -85,7 +95,24 @@ public class QuestionsController implements Initializable {
         }
         
         this.txtSearch.textProperty().addListener( a -> {
-            BaseServices searchService = new KeywordQuestionServiceDecorator(txtSearch.getText());
+            BaseServices searchService = new KeywordQuestionServiceDecorator(MyConfig.quesService, txtSearch.getText());
+            try {
+                this.tbQuestion.setItems(FXCollections.observableList(searchService.list()));
+            } catch (SQLException ex) {
+                Logger.getLogger(QuestionsController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+        });
+        
+        this.cbSearchCates.getSelectionModel().selectedItemProperty().addListener(p ->{
+            BaseServices searchService = new CategoryQuestionServiceDecorator(MyConfig.quesService, this.cbSearchCates.getSelectionModel().getSelectedItem().getId());
+            try {
+                this.tbQuestion.setItems(FXCollections.observableList(searchService.list()));
+            } catch (SQLException ex) {
+                Logger.getLogger(QuestionsController.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
+        });
+        this.cbSearchLevels.getSelectionModel().selectedItemProperty().addListener(p ->{
+            BaseServices searchService = new LevelQuestionServiceDecorator(MyConfig.quesService, this.cbSearchLevels.getSelectionModel().getSelectedItem().getId());
             try {
                 this.tbQuestion.setItems(FXCollections.observableList(searchService.list()));
             } catch (SQLException ex) {
@@ -112,7 +139,6 @@ public class QuestionsController implements Initializable {
     }
 
     public void handleAddQuestion(ActionEvent event) {
-        // --- BẮT ĐẦU KIỂM TRA DỮ LIỆU ---
         if (this.txtContent.getText().isBlank()) {
             MyAlert.getInstance().showMsg("Vui lòng nhập nội dung câu hỏi!", Alert.AlertType.WARNING);
             return;
@@ -160,7 +186,7 @@ public class QuestionsController implements Initializable {
                 b.addChoice(new Choice(txt.getText(), rdo.isSelected()));
             }
 
-            uQService.addQuestion(b.build());
+            MyConfig.uQService.addQuestion(b.build());
 
             this.txtContent.clear();
             this.cbCates.getSelectionModel().clearSelection();
@@ -184,6 +210,21 @@ public class QuestionsController implements Initializable {
         TableColumn colContent = new TableColumn("Nội dung câu hỏi");
         colContent.setCellValueFactory(new PropertyValueFactory("content"));
         colContent.setPrefWidth(300);
+        //xoa
+//        TableColumn colAction = new TableColumn("Thao tac");
+//        colAction.setCellFactory(p -> {
+//            TableCell cell = new TableCell();
+//            
+//            Button b = new Button("Xoa");
+//            b.setOnAction(event ->{
+//                Optional<ButtonType> t = MyAlert.getInstance().showMsg("Xoa cau hoi thi cac lua chon cung xoa theo, ban co muon xoa", Alert.AlertType.CONFIRMATION);
+//                if(t.isPresent() && t.get().equals(ButtonType.OK)){
+//                    Question q = (Question) cell.getTableRow().getItem();
+//                    
+//                }
+//            });
+//            return null;
+//        });
 
         this.tbQuestion.getColumns().clear();
         this.tbQuestion.getColumns().addAll(colId, colContent);

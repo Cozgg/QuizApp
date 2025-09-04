@@ -7,25 +7,28 @@ package com.nhc.services.questions;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  *
  * @author admin
  */
-public class KeywordQuestionServiceDecorator extends QuestionServices {
+public class KeywordQuestionServiceDecorator extends QuestionDecorator{
 
     private String kw;
 
-    public KeywordQuestionServiceDecorator(String kw) {
+    public KeywordQuestionServiceDecorator(BaseQuestionServices decorator, String kw) {
+        super(decorator);
         this.kw = kw;
     }
 
+
     @Override
-    public PreparedStatement getStm(Connection con) throws SQLException {
-        PreparedStatement stm = con.prepareCall("SELECT * FROM question WHERE content like concat('%', ? , '%')");
+    public String getSQL(List<Object> params) {
+        String sql = this.decorator.getSQL(params) + "AND content like concat('%', ? , '%')";
         
-        stm.setString(1, kw);
-        return stm;
+        params.add(this.kw);
+        return sql;
     }
 
 }

@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
-
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="649.0" prefWidth="600.0" styleClass="Main" stylesheets="@style.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.nhc.quizapp.PracticeController">
    <children>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="title" text="LUYỆN TẬP" />
       <HBox prefHeight="54.0" prefWidth="550.0" styleClass="Main">
          <children>
-            <TextField fx:id="txtNum" stylesheets="@light.css" />
+            <TextField fx:id="txtNum" prefHeight="32.0" prefWidth="115.0" stylesheets="@light.css" />
+            <ComboBox fx:id="cbSearchCates" prefHeight="32.0" prefWidth="129.0" promptText="Danh muc" />
+            <ComboBox fx:id="cbSearchLevels" prefHeight="32.0" prefWidth="115.0" promptText="Muc do" />
             <Button fx:id="btStart" mnemonicParsing="false" onAction="#handleStart" text="Bắt đầu" />
          </children>
       </HBox>

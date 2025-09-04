@@ -17,34 +17,55 @@ import java.util.List;
  *
  * @author admin
  */
-public class LimitQuestionServiceDecorator extends QuestionServices{
+public class LimitQuestionServiceDecorator extends QuestionDecorator{
     
     private int num;
 
-    public LimitQuestionServiceDecorator(int num) {
+    public LimitQuestionServiceDecorator(BaseQuestionServices decorator, int num) {
+        super(decorator);
         this.num = num;
     }
-    
+
+//    @Override
+//    public PreparedStatement getSQL(Connection con) throws SQLException {
+//        PreparedStatement stm = con.prepareCall("SELECT * FROM choice ORDER BY rand() LIMIT ?");
+//        
+//        stm.setInt(1, num);
+//        return stm;
+//    }
+//
+//    @Override
+//    public List<Question> getResults(ResultSet rs) throws SQLException {
+//        List<Question> questions = new ArrayList<>();
+//
+//        while (rs.next()) {
+//            int id = rs.getInt("id");
+//            BaseServices s = new ChoiceService(id);
+//            Question q = new Question.Builder(id, rs.getString("content")).addAllChoice(s.list()).build();
+//            questions.add(q);
+//        }
+//        return questions;
+//    }
+
     @Override
-    public PreparedStatement getStm(Connection con) throws SQLException {
-        PreparedStatement stm = con.prepareCall("SELECT * FROM choice ORDER BY rand() LIMIT ?");
-        
-        stm.setInt(1, num);
-        return stm;
+    public String getSQL(List<Object> params) {
+        String sql = this.decorator.getSQL(params) + "ORDER BY rand() LIMIT ?";
+        params.add(this.num);
+        return sql;
     }
 
     @Override
-    public List<Question> getResults(ResultSet rs) throws SQLException {
-        List<Question> questions = new ArrayList<>();
-
-        while (rs.next()) {
-            int id = rs.getInt("id");
-            BaseServices s = new ChoiceService(id);
-            Question q = new Question.Builder(id, rs.getString("content")).addAllChoice(s.list()).build();
-            questions.add(q);
+    public List<Question> list() throws SQLException {
+        List<Question> questions = super.list();
+        
+        for(var q : questions){
+            BaseServices s = new ChoiceService(q.getId());
+            q.setChoices(s.list());
         }
         return questions;
     }
+    
+    
     
     
     
