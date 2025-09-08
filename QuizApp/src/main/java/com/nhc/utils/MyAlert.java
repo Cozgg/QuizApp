@@ -4,7 +4,9 @@
  */
 package com.nhc.utils;
 
+import java.util.Optional;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 
 /**
  *
@@ -31,9 +33,9 @@ public class MyAlert {
         alert.showAndWait();
     }
     
-    public void showMsg(String content, Alert.AlertType type){
+    public Optional<ButtonType> showMsg(String content, Alert.AlertType type){
         alert.setContentText(content);
         alert.setAlertType(type);
-        alert.showAndWait();
+        return alert.showAndWait();
     }
 }

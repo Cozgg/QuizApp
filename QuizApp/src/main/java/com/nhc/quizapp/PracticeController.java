@@ -8,6 +8,7 @@ import com.nhc.pojo.Category;
 import com.nhc.pojo.Level;
 import com.nhc.pojo.Question;
 import com.nhc.services.BaseServices;
+import com.nhc.services.FlyweightFactory;
 import com.nhc.services.questions.LimitQuestionServiceDecorator;
 import com.nhc.utils.MyConfig;
 import java.net.URL;
@@ -53,8 +54,8 @@ public class PracticeController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
          try {
-            this.cbSearchCates.setItems(FXCollections.observableList(MyConfig.cateService.list()));
-            this.cbSearchLevels.setItems(FXCollections.observableList(MyConfig.lvlService.list()));
+            this.cbSearchCates.setItems(FXCollections.observableList(FlyweightFactory.getData(MyConfig.cateService, "categories")));
+            this.cbSearchLevels.setItems(FXCollections.observableList(FlyweightFactory.getData(MyConfig.lvlService, "levels")));
 
             
         } catch (SQLException ex) {

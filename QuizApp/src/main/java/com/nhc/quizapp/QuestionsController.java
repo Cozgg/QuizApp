@@ -9,23 +9,17 @@ import com.nhc.pojo.Choice;
 import com.nhc.pojo.Level;
 import com.nhc.pojo.Question;
 import com.nhc.services.BaseServices;
-import com.nhc.services.CategoryServices;
-import com.nhc.services.LevelServices;
+import com.nhc.services.FlyweightFactory;
 import com.nhc.services.questions.CategoryQuestionServiceDecorator;
 import com.nhc.services.questions.KeywordQuestionServiceDecorator;
 import com.nhc.services.questions.LevelQuestionServiceDecorator;
-import com.nhc.services.questions.QuestionServices;
-import com.nhc.services.questions.UpdateQuestionServices;
 import com.nhc.utils.MyAlert;
 import com.nhc.utils.MyConfig;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -80,11 +74,13 @@ public class QuestionsController implements Initializable {
         }
 
         try {
-            this.cbCates.setItems(FXCollections.observableList(MyConfig.cateService.list()));
-            this.cbSearchCates.setItems(FXCollections.observableList(MyConfig.cateService.list()));
+            
+            //sử dụng flyweight để tránh tình trạng lặp lại truy vấn 
+            this.cbCates.setItems(FXCollections.observableList(FlyweightFactory.getData(MyConfig.cateService, "categories")));
+            this.cbSearchCates.setItems(FXCollections.observableList(FlyweightFactory.getData(MyConfig.cateService, "categories")));
 
-            this.cbLevels.setItems(FXCollections.observableList(MyConfig.lvlService.list()));
-            this.cbSearchLevels.setItems(FXCollections.observableList(MyConfig.lvlService.list()));
+            this.cbLevels.setItems(FXCollections.observableList(FlyweightFactory.getData(MyConfig.lvlService, "levels")));
+            this.cbSearchLevels.setItems(FXCollections.observableList(FlyweightFactory.getData(MyConfig.lvlService, "levels")));
 
             this.loadColumns();
             this.tbQuestion.setItems(FXCollections.observableList(MyConfig.quesService.list()));
@@ -210,23 +206,34 @@ public class QuestionsController implements Initializable {
         TableColumn colContent = new TableColumn("Nội dung câu hỏi");
         colContent.setCellValueFactory(new PropertyValueFactory("content"));
         colContent.setPrefWidth(300);
-        //xoa
-//        TableColumn colAction = new TableColumn("Thao tac");
-//        colAction.setCellFactory(p -> {
-//            TableCell cell = new TableCell();
-//            
-//            Button b = new Button("Xoa");
-//            b.setOnAction(event ->{
-//                Optional<ButtonType> t = MyAlert.getInstance().showMsg("Xoa cau hoi thi cac lua chon cung xoa theo, ban co muon xoa", Alert.AlertType.CONFIRMATION);
-//                if(t.isPresent() && t.get().equals(ButtonType.OK)){
-//                    Question q = (Question) cell.getTableRow().getItem();
-//                    
-//                }
-//            });
-//            return null;
-//        });
+        
+        TableColumn colAction = new TableColumn("Thao tac");
+        colAction.setCellFactory(p -> {
+            TableCell cell = new TableCell();
+            
+            Button b = new Button("Xoa");
+            b.setOnAction(event ->{
+                Optional<ButtonType> t = MyAlert.getInstance().showMsg("Xoa cau hoi thi cac lua chon cung xoa theo, ban co muon xoa", Alert.AlertType.CONFIRMATION);
+                if(t.isPresent() && t.get().equals(ButtonType.OK)){
+                    Question q = (Question) cell.getTableRow().getItem();
+                    
+                    try {
+                        if(MyConfig.uQService.delQuestion(q.getId()) == true){
+                            MyAlert.getInstance().showMsg("Xoa cau hoi thanh cong");
+                            this.tbQuestion.getItems().remove(q);
+                        }
+                        else 
+                            MyAlert.getInstance().showMsg("Xoa cau hoi that bai", Alert.AlertType.WARNING);
+                    } catch (SQLException e) {
+                        MyAlert.getInstance().showMsg("He thong co loi, ly do: " + e.getMessage(),Alert.AlertType.WARNING);
+                    }
+                }
+            });
+            cell.setGraphic(b);
+            return cell;
+        });
 
         this.tbQuestion.getColumns().clear();
-        this.tbQuestion.getColumns().addAll(colId, colContent);
+        this.tbQuestion.getColumns().addAll(colId, colContent, colAction);
     }
 }

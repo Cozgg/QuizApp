@@ -52,4 +52,13 @@ public class UpdateQuestionServices {
         }
 
     }
+    
+    public boolean delQuestion(int questionId) throws SQLException {
+        Connection conn = MyConnector.getInstance().connect();
+        
+        PreparedStatement stm = conn.prepareCall("DELETE FROM question WHERE id = ?");
+        stm.setInt(1, questionId);
+        
+        return stm.executeUpdate()> 0;
+    }
 }
