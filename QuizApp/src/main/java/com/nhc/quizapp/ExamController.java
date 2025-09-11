@@ -14,15 +14,19 @@ import com.nhc.services.exam.SpecificStrategy;
 import com.nhc.utils.MyAlert;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -114,6 +118,7 @@ public class ExamController implements Initializable {
 
         try {
             this.questions = s.getQuestion();
+            Collections.shuffle(questions);
             this.lvQuestion.setItems(FXCollections.observableList(questions));
         } catch (SQLException ex) {
             Logger.getLogger(ExamController.class.getName()).log(Level.SEVERE, null, ex);
@@ -123,10 +128,18 @@ public class ExamController implements Initializable {
     public void markHandle(ActionEvent e) {
         int count = 0;
         for (var c : answer.values()) {
-            if (c.isIsCorrect() == true) {
+            if (c.isIsCorrect()) {
                 count++;
             }
         }
         MyAlert.getInstance().showMsg(String.format("Ban da tra loi dung %d/%d", count, this.questions.size()));
+    }
+    
+    public void saveHandle(ActionEvent e ) throws SQLException{
+        Optional<ButtonType> t = MyAlert.getInstance().showMsg("Ban chac chan luu bai thi", Alert.AlertType.CONFIRMATION);
+        
+        if(t.isPresent() && t.get() == ButtonType.OK){
+            s.saveExam(questions);
+        }
     }
 }

@@ -49,7 +49,7 @@ public class LimitQuestionServiceDecorator extends QuestionDecorator{
 
     @Override
     public String getSQL(List<Object> params) {
-        String sql = this.decorator.getSQL(params) + "ORDER BY rand() LIMIT ?";
+        String sql = this.decorator.getSQL(params) + " ORDER BY RAND() LIMIT ?";
         params.add(this.num);
         return sql;
     }
