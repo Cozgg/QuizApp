@@ -9,4 +9,5 @@ module com.nhc.quizapp {
     exports com.nhc.quizapp;
     exports com.nhc.utils; // nếu bạn cần truy cập MyConnector từ nơi khác
     exports com.nhc.pojo;
+    exports com.nhc.services.exam;
 }
