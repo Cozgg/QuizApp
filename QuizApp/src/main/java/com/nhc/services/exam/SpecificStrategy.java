@@ -7,24 +7,25 @@ package com.nhc.services.exam;
 
 import com.nhc.pojo.Question;
 import com.nhc.services.questions.BaseQuestionServices;
-import com.nhc.services.questions.LimitQuestionServicesDecorator;
-import com.nhc.utils.MyConfigs;
+import com.nhc.services.questions.LimitQuestionServiceDecorator;
+import com.nhc.utils.MyConfig;
 import java.sql.SQLException;
 import java.util.List;
 /**
  *
  * @author admin
  */
-public class SpecificExam extends ExamStrategy {
+public class SpecificStrategy extends ExamStrategy {
     public int num;
     
-    public SpecificExam(int num){
+    public SpecificStrategy(int num){
         this.num = num;
     }
     
     @Override
     public List<Question> getQuestion() throws SQLException{
-        BaseQuestionServices s = new LimitedQuestionServicesDecorator(MyConfig.quesService, this.num);
+        BaseQuestionServices s = new LimitQuestionServiceDecorator(MyConfig.quesService, num);
         return s.list();
+        
     }
 }
